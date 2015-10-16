@@ -7,6 +7,7 @@ module.exports = {
   path: '/notify',
   config: {
     handler: function (req, reply) {
+      console.log('got: ' + JSON.stringify(req.payload) );
       var params = req.payload;
 
       webpush.sendNotification(

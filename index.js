@@ -8,7 +8,8 @@ function startServer(port) {
   var server = new Hapi.Server();
   server.connection({
     host: 'localhost',
-    port: process.env.PORT || port
+    port: process.env.PORT || port,
+    routes: { cors: true }
   });
   server.route([
     require('./routes/home'),
@@ -17,4 +18,6 @@ function startServer(port) {
   server.start(function () {
     console.log('Server running at: %s', server.info.uri);
   });
+
+
 }
