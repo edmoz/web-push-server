@@ -23,7 +23,7 @@ module.exports = {
         var promise;
         webpush.setGCMAPIKey(process.env.GCM_API_KEY);
         if (params.payload){
-          promise = webpush.sendNotification(params.endpoint, params.TTL, userPublicKey, new Buffer(payload, 'utf8'));
+          promise = webpush.sendNotification(params.endpoint, params.TTL, params.userPublicKey, new Buffer(params.payload, 'utf8'));
         }else{
           promise = webpush.sendNotification(params.endpoint, params.TTL);
         }
