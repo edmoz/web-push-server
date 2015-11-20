@@ -28,9 +28,9 @@ module.exports = {
           promise = webpush.sendNotification(params.endpoint, params.TTL);
         }
         promise.then(function (result) {
-            console.log(result);
+            console.log('result:' + result);
           }).catch(function (err) {
-            console.log(err);
+            console.log('error:'+ err);
           });
       }
       // send a notification right away
