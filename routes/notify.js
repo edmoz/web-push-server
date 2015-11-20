@@ -28,8 +28,10 @@ module.exports = {
           promise = webpush.sendNotification(params.endpoint, params.TTL);
         }
         promise.then(function (result) {
+            reply('created').code(201);
             console.log('result:' + result);
           }).catch(function (err) {
+            reply('error').code(500);
             console.log('error:'+ err);
           });
       }
