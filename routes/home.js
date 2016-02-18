@@ -5,6 +5,7 @@ module.exports = {
   path:'/',
   config: {
     handler: function (req, reply) {
+      console.log('/ - ua:' + JSON.stringify(req.headers));
       reply('hello world');
     }
   }

@@ -18,6 +18,7 @@ module.exports = {
       var count = 1;
       var repeat = params.repeat || 1;
       var delay = params.delay || 15;
+      var floodDelay = params.floodDelay || 0;
 
       function doSend(){
         var promise;
@@ -35,13 +36,26 @@ module.exports = {
             console.log('error:'+ err);
           });
       }
-      // send a notification right away
-      doSend();
+
+      //flood
+      if ( repeat > 1 && floodDelay > 0){
+        setTimeout(function(){
+          while(repeat > 0){
+            console.log('flood', repeat);
+            doSend();
+            repeat--;
+          }
+        }, floodDelay);
+      }
 
       //repeat
-      if ( repeat > 1){
+      if ( repeat > 1 && delay > 0 && floodDelay < 1){
+        // send a notification right away
+        doSend();
+        console.log('delay - count: '+count);
+
         var interval = setInterval(function() {
-          // console.log('count: '+count);
+          console.log('delay - count: '+count);
           doSend();
           if ( count >= params.repeat - 1){
               clearInterval(interval);
