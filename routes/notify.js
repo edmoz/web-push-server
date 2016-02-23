@@ -20,14 +20,7 @@ module.exports = {
       var delay = params.delay || 15;
       var floodDelay = params.floodDelay || 0;
 
-      function doSend(){
-        var promise;
-        webpush.setGCMAPIKey(process.env.GCM_API_KEY);
-        if (params.payload){
-          promise = webpush.sendNotification(params.endpoint, params.TTL, params.userPublicKey, new Buffer(params.payload, 'utf8'));
-        }else{
-          promise = webpush.sendNotification(params.endpoint, params.TTL);
-        }
+      function replyWithPromise(promise) {
         promise.then(function (result) {
             reply('created').code(201);
             console.log('result:' + result);
@@ -37,34 +30,51 @@ module.exports = {
           });
       }
 
+      function doSend(){
+        var promise;
+        webpush.setGCMAPIKey(process.env.GCM_API_KEY);
+        if (params.payload){
+          promise = webpush.sendNotification(params.endpoint, params.TTL, params.userPublicKey, new Buffer(params.payload, 'utf8'));
+        }else{
+          promise = webpush.sendNotification(params.endpoint, params.TTL);
+        }
+        return promise;
+      }
+
       //flood
       if ( repeat > 1 && floodDelay > 0){
         setTimeout(function(){
+          var promises = [];
           while(repeat > 0){
             console.log('flood', repeat);
-            doSend();
+            promises.push(doSend());
             repeat--;
           }
+          replyWithPromise(Promise.all(promises));
         }, floodDelay);
+        return;
       }
 
       //repeat
       if ( repeat > 1 && delay > 0 && floodDelay < 1){
         // send a notification right away
-        doSend();
+        replyWithPromise(doSend());
         console.log('delay - count: '+count);
 
         var interval = setInterval(function() {
           console.log('delay - count: '+count);
-          doSend();
+          doSend().catch(function (err) {
+            console.log('delay - error: ', err);
+          });
           if ( count >= params.repeat - 1){
               clearInterval(interval);
           }
           count++;
         }, delay);
+        return;
       }
 
-
+      replyWithPromise(doSend());
 
     }
   }
