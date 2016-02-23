@@ -34,7 +34,8 @@ module.exports = {
           }).catch(function (err) {
             console.log('error:'+ err);
             reply('error').code(500);
-          });
+
+        });
       }
 
       //flood
