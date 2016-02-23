@@ -31,7 +31,7 @@ module.exports = {
         promise.then(function (result) {
             console.log('result:' + result);
             return reply('created').code(201);
-          }).catch(function (err) {
+          }, function (err) {
             console.log('error:'+ err);
             return reply('error').code(500);
         });
