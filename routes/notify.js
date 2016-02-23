@@ -30,11 +30,10 @@ module.exports = {
         }
         promise.then(function (result) {
             console.log('result:' + result);
-            reply('created').code(201);
+            return reply('created').code(201);
           }).catch(function (err) {
             console.log('error:'+ err);
-            reply('error').code(500);
-
+            return reply('error').code(500);
         });
       }
 
