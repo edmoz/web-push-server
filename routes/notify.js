@@ -34,8 +34,6 @@ module.exports = {
           }).catch(function (err) {
             console.log('error:'+ err);
             reply('error').code(500);
-          }).then(function(result){
-            console.log('after catch:'+ result);
           });
       }
 
@@ -56,14 +54,17 @@ module.exports = {
         // send a notification right away
         doSend();
 
-        var interval = setInterval(function() {
-          console.log('delay - count: '+count);
-          doSend();
-          if ( count >= params.repeat - 1){
-              clearInterval(interval);
-          }
-          count++;
-        }, delay);
+        // if there's more than 2 notifications to send
+        if (repeat >= 2){
+          var interval = setInterval(function() {
+            console.log('delay - count: '+count);
+            doSend();
+            if ( count >= params.repeat - 1){
+                clearInterval(interval);
+            }
+            count++;
+          }, delay);
+        }
       }
 
 
