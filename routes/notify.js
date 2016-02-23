@@ -7,7 +7,7 @@ module.exports = {
   path: '/notify',
   config: {
     handler: function (req, reply) {
-      console.log('ua:' + JSON.stringify(req.headers));
+      // console.log('ua:' + JSON.stringify(req.headers));
       console.log('got: ' + JSON.stringify(req.payload) );
 
       if (!process.env.GCM_API_KEY) {
@@ -29,11 +29,13 @@ module.exports = {
           promise = webpush.sendNotification(params.endpoint, params.TTL);
         }
         promise.then(function (result) {
-            reply('created').code(201);
             console.log('result:' + result);
+            reply('created').code(201);
           }).catch(function (err) {
-            reply('error').code(500);
             console.log('error:'+ err);
+            reply('error').code(500);
+          }).then(function(result){
+            console.log('after catch:'+ result);
           });
       }
 
@@ -49,10 +51,10 @@ module.exports = {
       }
 
       //repeat
-      if ( repeat > 1 && delay > 0 && floodDelay < 1){
+      if ( repeat > 0 && delay > 0 && floodDelay < 1){
+        console.log('delay - count: '+count);
         // send a notification right away
         doSend();
-        console.log('delay - count: '+count);
 
         var interval = setInterval(function() {
           console.log('delay - count: '+count);
