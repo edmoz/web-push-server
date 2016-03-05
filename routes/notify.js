@@ -19,6 +19,8 @@ module.exports = {
       var repeat = params.repeat || 1;
       var delay = params.delay || 15;
       var floodDelay = params.floodDelay || 0;
+      var vapid = {"audience": "https://people.mozilla.org/~ewong2/push-notification-test",
+                   "subject": "mailto:ewong@mozilla.com"};
 
       function replyWithPromise(promise) {
         promise.then(function (result) {
@@ -30,17 +32,18 @@ module.exports = {
           });
       }
 
-      function doSend(){
+      function doSend() {
         var promise;
         webpush.setGCMAPIKey(process.env.GCM_API_KEY);
-        if (params.payload){
-          promise = webpush.sendNotification(params.endpoint, params.TTL, params.userPublicKey, new Buffer(params.payload, 'utf8'));
-        }else{
+        if (params.payload) {
+          promise = webpush.sendNotification(params.endpoint, params.TTL, params.userPublicKey,
+            new Buffer(params.payload, 'utf8'),
+            vapid);
+        } else {
           promise = webpush.sendNotification(params.endpoint, params.TTL);
         }
         return promise;
       }
-
       //flood
       if ( repeat > 1 && floodDelay > 0){
         setTimeout(function(){
@@ -56,22 +59,24 @@ module.exports = {
       }
 
       //repeat
-      if ( repeat > 0 && delay > 0 && floodDelay < 1){
-        console.log('delay - count: '+count);
+      if (repeat > 0 && delay > 0 && floodDelay < 1) {
+        console.log('delay - count: ' + count);
         // send a notification right away
         replyWithPromise(doSend());
-        console.log('delay - count: '+count);
+        console.log('delay - count: ' + count);
 
-        var interval = setInterval(function() {
-          console.log('delay - count: '+count);
-          doSend().catch(function (err) {
-            console.log('delay - error: ', err);
-          });
-          if ( count >= params.repeat - 1){
+        if (repeat > 1) {
+          var interval = setInterval(function() {
+            console.log('delay - count: ' + count);
+            doSend().catch(function(err) {
+              console.log('delay - error: ', err);
+            });
+            if (count >= params.repeat - 1) {
               clearInterval(interval);
-          }
-          count++;
-        }, delay);
+            }
+            count++;
+          }, delay);
+        }
         return;
       }
 
